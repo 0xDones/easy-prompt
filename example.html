@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Architect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-tertiary: #1a1a1d;
+            --border: #2a2a2e;
+            --text-primary: #fafafa;
+            --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
+            --accent: #22c55e;
+            --accent-dim: #16a34a;
+            --accent-glow: rgba(34, 197, 94, 0.15);
+            --tag-color: #f472b6;
+            --required: #ef4444;
+            --optional: #3b82f6;
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle { color: var(--text-secondary); font-size: 1.1rem; font-weight: 300; }
+
+        .methodology {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .methodology span {
+            background: var(--bg-tertiary);
+            padding: 0.35rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .panel-body { padding: 1.5rem; }
+
+        .section { margin-bottom: 1.5rem; }
+        .section:last-child { margin-bottom: 0; }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tag-preview {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--tag-color);
+            background: rgba(244, 114, 182, 0.1);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .badge-required {
+            font-size: 0.65rem;
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--required);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-optional {
+            font-size: 0.65rem;
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--optional);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.875rem 1rem;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        textarea::placeholder, input::placeholder { color: var(--text-muted); }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .toggle-row:last-child { border-bottom: none; }
+
+        .toggle-label { display: flex; flex-direction: column; gap: 0.125rem; }
+        .toggle-label span:first-child { font-weight: 500; font-size: 0.85rem; }
+        .toggle-label span:last-child { font-size: 0.7rem; color: var(--text-muted); }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            cursor: pointer;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-tertiary);
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 2px;
+            top: 2px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .toggle input:checked + .toggle-slider {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .toggle input:checked + .toggle-slider::before {
+            transform: translateX(20px);
+            background: white;
+        }
+
+        .output-area {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.8;
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .output-area .tag { color: var(--tag-color); }
+        .output-area .content { color: var(--text-secondary); }
+        .output-area .empty { color: var(--text-muted); font-style: italic; }
+
+        .actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        button {
+            flex: 1;
+            padding: 0.875rem 1.5rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-dim);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .copied {
+            background: var(--accent) !important;
+            color: var(--bg-primary) !important;
+        }
+
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .chip {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            margin-top: 1rem;
+        }
+
+        .stat { display: flex; flex-direction: column; }
+        .stat-value { font-weight: 600; font-size: 1.25rem; color: var(--accent); }
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-box {
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box h4 {
+            color: var(--accent);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .collapsible {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .collapsible-header {
+            padding: 0.875rem 1rem;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .collapsible-header:hover { background: var(--bg-primary); }
+        .collapsible-content { padding: 1rem; display: none; }
+        .collapsible.open .collapsible-content { display: block; }
+        .collapsible-icon { transition: transform 0.2s; }
+        .collapsible.open .collapsible-icon { transform: rotate(180deg); }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+
+        /* Reference Guide Styles */
+        .reference-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .reference-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .tag-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .tag-card-header h3 {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--tag-color);
+            font-size: 1.1rem;
+        }
+
+        .tag-card p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem; }
+
+        .tag-example {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            white-space: pre-wrap;
+            color: var(--text-secondary);
+        }
+
+        .tag-example .tag { color: var(--tag-color); }
+
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1rem;
+        }
+
+        @media (max-width: 500px) {
+            .tag-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Prompt Architect</h1>
+            <p class="subtitle">Build structured prompts with XML tags for better AI understanding</p>
+            <div class="methodology">
+                <span>KERNEL Framework</span>
+                <span>Anthropic Best Practices</span>
+                <span>XML Tags</span>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Input Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Build Your Prompt</span>
+                </div>
+                <div class="panel-body">
+                    <div class="info-box">
+                        <h4>💡 KERNEL Principle</h4>
+                        <p>One prompt = one goal. Keep it simple, easy to verify, reproducible, narrow in scope, with explicit constraints, and legible structure.</p>
+                    </div>
+
+                    <div class="example-chips">
+                        <span class="chip" onclick="loadExample('code')">Code Review</span>
+                        <span class="chip" onclick="loadExample('writing')">Content Writing</span>
+                        <span class="chip" onclick="loadExample('analysis')">Data Analysis</span>
+                        <span class="chip" onclick="loadExample('debug')">Debug Help</span>
+                    </div>
+
+                    <!-- Role Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <label>
+                                Role / Persona
+                                <span class="tag-preview">&lt;role&gt;</span>
+                                <span class="badge-optional">OPTIONAL</span>
+                            </label>
+                        </div>
+                        <p class="hint">Who should Claude be? Define expertise, perspective, and tone.</p>
+                        <input type="text" id="role" placeholder="e.g., You are a senior Python developer with 10 years of experience...">
+                    </div>
+
+                    <!-- Context Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <label>
+                                Context
+                                <span class="tag-preview">&lt;context&gt;</span>
+                                <span class="badge-optional">OPTIONAL</span>
+                            </label>
+                        </div>
+                        <p class="hint">Background information, documents, situation details, or domain knowledge.</p>
+                        <textarea id="context" rows="3" placeholder="e.g., I'm building a SaaS application for small businesses..."></textarea>
+                    </div>
+
+                    <!-- Task Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <label>
+                                Task
+                                <span class="tag-preview">&lt;task&gt;</span>
+                                <span class="badge-required">REQUIRED</span>
+                            </label>
+                        </div>
+                        <p class="hint">ONE clear, specific goal. What exactly should Claude do?</p>
+                        <textarea id="task" rows="2" placeholder="e.g., Review this code for security vulnerabilities and suggest fixes."></textarea>
+                    </div>
+
+                    <!-- Constraints Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <label>
+                                Constraints
+                                <span class="tag-preview">&lt;constraints&gt;</span>
+                                <span class="badge-optional">RECOMMENDED</span>
+                            </label>
+                        </div>
+                        <p class="hint">Boundaries, limitations, preferences. Tell Claude what to do instead of what NOT to do.</p>
+                        <textarea id="constraints" rows="3" placeholder="e.g., Use only standard library. Keep functions under 20 lines. Prefer readability over performance."></textarea>
+                    </div>
+
+                    <!-- Format Section -->
+                    <div class="section">
+                        <div class="section-header">
+                            <label>
+                                Output Format
+                                <span class="tag-preview">&lt;format&gt;</span>
+                                <span class="badge-optional">RECOMMENDED</span>
+                            </label>
+                        </div>
+                        <p class="hint">Desired structure, length, or style of the response.</p>
+                        <textarea id="format" rows="2" placeholder="e.g., Return a numbered list of issues with severity and suggested fix."></textarea>
+                    </div>
+
+                    <!-- Success Criteria Section -->
+                    <div class="collapsible" id="criteria-section">
+                        <div class="collapsible-header" onclick="toggleCollapsible('criteria-section')">
+                            <label>
+                                Success Criteria
+                                <span class="tag-preview">&lt;success_criteria&gt;</span>
+                                <span class="badge-optional">OPTIONAL</span>
+                            </label>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <p class="hint">How will you verify the output is correct? Measurable, specific criteria.</p>
+                            <textarea id="criteria" rows="2" placeholder="e.g., Each issue must cite specific line numbers. All fixes must compile."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Examples Section -->
+                    <div class="collapsible" id="examples-section">
+                        <div class="collapsible-header" onclick="toggleCollapsible('examples-section')">
+                            <label>
+                                Examples
+                                <span class="tag-preview">&lt;examples&gt;</span>
+                                <span class="badge-optional">OPTIONAL</span>
+                            </label>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <p class="hint">Show Claude what good output looks like. 3-5 diverse examples recommended.</p>
+                            <textarea id="examples" rows="4" placeholder="<example>&#10;Input: x = eval(user_input)&#10;Output: Issue: Using eval() with user input | Severity: HIGH | Fix: Use ast.literal_eval()&#10;</example>"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Input Data Section -->
+                    <div class="collapsible" id="input-section">
+                        <div class="collapsible-header" onclick="toggleCollapsible('input-section')">
+                            <label>
+                                Input Data
+                                <span class="tag-preview">&lt;input&gt;</span>
+                                <span class="badge-optional">AS NEEDED</span>
+                            </label>
+                            <span class="collapsible-icon">▼</span>
+                        </div>
+                        <div class="collapsible-content">
+                            <p class="hint">The actual data, code, document, or content to process.</p>
+                            <textarea id="inputData" rows="4" placeholder="Paste your code, text, or data here..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div class="section" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                        <label style="margin-bottom: 0.75rem;">Advanced Options</label>
+                        <div class="toggle-row">
+                            <div class="toggle-label">
+                                <span>Enable Thinking Tags</span>
+                                <span>Request &lt;thinking&gt; and &lt;answer&gt; structure</span>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="enableThinking">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-label">
+                                <span>Step-by-Step Reasoning</span>
+                                <span>Ask Claude to explain its reasoning</span>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="stepByStep">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Generated Prompt</span>
+                </div>
+                <div class="panel-body">
+                    <div id="output" class="output-area">
+                        <span class="empty">Fill in the sections on the left to generate your structured prompt...
+
+Minimum required: Task
+
+Recommended: Task + Constraints + Format</span>
+                    </div>
+
+                    <div class="stats">
+                        <div class="stat">
+                            <span class="stat-value" id="charCount">0</span>
+                            <span class="stat-label">Characters</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="wordCount">0</span>
+                            <span class="stat-label">Words</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="tokenEstimate">~0</span>
+                            <span class="stat-label">Est. Tokens</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value" id="sectionCount">0</span>
+                            <span class="stat-label">Sections</span>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button class="btn-secondary" onclick="clearAll()">Clear All</button>
+                        <button class="btn-primary" id="copyBtn" onclick="copyToClipboard()">📋 Copy Prompt</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reference Guide Section -->
+        <div class="reference-section">
+            <h2>📖 XML Tag Reference Guide</h2>
+
+            <div class="tag-grid">
+                <!-- Required Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;task&gt;</h3>
+                        <span class="badge-required">REQUIRED</span>
+                    </div>
+                    <p><strong>Purpose:</strong> The single, clear goal you want Claude to accomplish. This is the heart of your prompt — without a clear task, everything else is noise.</p>
+                    <p><strong>KERNEL Principle:</strong> Keep it simple (K) + Narrow scope (N) — one prompt = one task.</p>
+                    <div class="tag-example"><span class="tag">&lt;task&gt;</span>
+Review the provided Python function for potential
+memory leaks and suggest optimizations that reduce
+memory usage by at least 20%.
+<span class="tag">&lt;/task&gt;</span></div>
+                </div>
+
+                <!-- Role Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;role&gt;</h3>
+                        <span class="badge-optional">OPTIONAL</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Define who Claude should be. Sets expertise level, perspective, and communication style. Anthropic calls this "Give Claude a role."</p>
+                    <p><strong>When to use:</strong> When you need domain-specific expertise or a particular communication tone.</p>
+                    <div class="tag-example"><span class="tag">&lt;role&gt;</span>
+You are a senior security engineer with 15 years
+of experience in penetration testing and secure
+code review. You communicate findings clearly
+to both technical and non-technical stakeholders.
+<span class="tag">&lt;/role&gt;</span></div>
+                </div>
+
+                <!-- Context Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;context&gt;</h3>
+                        <span class="badge-optional">OPTIONAL</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Background information Claude needs to understand the situation. Anthropic's golden rule: "Give Claude contextual information."</p>
+                    <p><strong>When to use:</strong> When the task requires domain knowledge, project details, or situational awareness.</p>
+                    <div class="tag-example"><span class="tag">&lt;context&gt;</span>
+I'm building a healthcare SaaS platform that must
+comply with HIPAA regulations. The application
+handles patient records and appointment scheduling.
+We use Python 3.11 with FastAPI and PostgreSQL.
+<span class="tag">&lt;/context&gt;</span></div>
+                </div>
+
+                <!-- Constraints Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;constraints&gt;</h3>
+                        <span class="badge-optional">RECOMMENDED</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Boundaries and limitations. KERNEL says "Explicit constraints" reduced unwanted outputs by 91%.</p>
+                    <p><strong>Anthropic tip:</strong> Tell Claude what to do <em>instead of</em> what not to do. Positive framing works better.</p>
+                    <div class="tag-example"><span class="tag">&lt;constraints&gt;</span>
+- Use only Python standard library (no pip packages)
+- Keep each function under 25 lines
+- Prefer readability over micro-optimizations
+- All code must be Python 3.10+ compatible
+- Include type hints for all function parameters
+<span class="tag">&lt;/constraints&gt;</span></div>
+                </div>
+
+                <!-- Format Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;format&gt;</h3>
+                        <span class="badge-optional">RECOMMENDED</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Define the structure, length, and style of Claude's response. KERNEL's "Legible structure" principle.</p>
+                    <p><strong>Anthropic tip:</strong> "Match your prompt style to desired output style" — if you want prose, write in prose.</p>
+                    <div class="tag-example"><span class="tag">&lt;format&gt;</span>
+For each issue found, provide:
+1. Line number(s) affected
+2. Issue description (1-2 sentences)
+3. Severity: CRITICAL / HIGH / MEDIUM / LOW
+4. Code snippet showing the fix
+
+End with a summary table of all issues.
+<span class="tag">&lt;/format&gt;</span></div>
+                </div>
+
+                <!-- Success Criteria Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;success_criteria&gt;</h3>
+                        <span class="badge-optional">OPTIONAL</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Measurable verification criteria. KERNEL's "Easy to verify" — 85% success rate with clear criteria vs 41% without.</p>
+                    <p><strong>Anthropic guidance:</strong> "Specific, Measurable, Achievable, Relevant" criteria.</p>
+                    <div class="tag-example"><span class="tag">&lt;success_criteria&gt;</span>
+- Every issue must reference specific line numbers
+- All suggested fixes must be syntactically valid
+- Severity ratings must follow OWASP guidelines
+- The summary table must include all issues found
+- Total response should be under 1000 words
+<span class="tag">&lt;/success_criteria&gt;</span></div>
+                </div>
+
+                <!-- Examples Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;examples&gt;</h3>
+                        <span class="badge-optional">OPTIONAL</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Show Claude what good output looks like. Anthropic: "3-5 diverse, relevant examples" dramatically improve accuracy.</p>
+                    <p><strong>Power tip:</strong> Include edge cases and variations to prevent Claude from overfitting to patterns.</p>
+                    <div class="tag-example"><span class="tag">&lt;examples&gt;</span>
+<span class="tag">&lt;example&gt;</span>
+Input: password = request.GET['pwd']
+Output:
+  Line: 15
+  Issue: Password transmitted via GET parameter
+  Severity: CRITICAL
+  Fix: Use POST method and HTTPS
+<span class="tag">&lt;/example&gt;</span>
+<span class="tag">&lt;example&gt;</span>
+Input: cursor.execute(f"SELECT * FROM users WHERE id={id}")
+Output:
+  Line: 42
+  Issue: SQL injection vulnerability
+  Severity: CRITICAL
+  Fix: cursor.execute("SELECT * FROM users WHERE id=?", (id,))
+<span class="tag">&lt;/example&gt;</span>
+<span class="tag">&lt;/examples&gt;</span></div>
+                </div>
+
+                <!-- Input Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;input&gt;</h3>
+                        <span class="badge-optional">AS NEEDED</span>
+                    </div>
+                    <p><strong>Purpose:</strong> The actual data, code, document, or content to be processed.</p>
+                    <p><strong>Anthropic tip:</strong> For long documents (20K+ tokens), place input at the TOP of the prompt, with instructions at the end.</p>
+                    <div class="tag-example"><span class="tag">&lt;input&gt;</span>
+def get_user(user_id):
+    query = f"SELECT * FROM users WHERE id = {user_id}"
+    result = db.execute(query)
+    return result.fetchone()
+<span class="tag">&lt;/input&gt;</span></div>
+                </div>
+
+                <!-- Thinking Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;thinking&gt; &lt;answer&gt;</h3>
+                        <span class="badge-optional">OPTIONAL</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Chain-of-thought prompting. Ask Claude to reason step-by-step before answering. Anthropic: "Reduces errors in math, logic, and complex tasks."</p>
+                    <p><strong>When to use:</strong> Complex reasoning, multi-step problems, analysis tasks.</p>
+                    <div class="tag-example"><span class="tag">&lt;format&gt;</span>
+First, analyze the code in <span class="tag">&lt;thinking&gt;</span> tags:
+- Identify potential issues
+- Consider edge cases
+- Evaluate severity
+
+Then provide your final assessment in <span class="tag">&lt;answer&gt;</span> tags.
+<span class="tag">&lt;/format&gt;</span></div>
+                </div>
+
+                <!-- Documents Tag -->
+                <div class="tag-card">
+                    <div class="tag-card-header">
+                        <h3>&lt;documents&gt;</h3>
+                        <span class="badge-optional">FOR LONG CONTEXT</span>
+                    </div>
+                    <p><strong>Purpose:</strong> Structure multiple documents with metadata. Anthropic's recommended pattern for long-context tasks.</p>
+                    <p><strong>Tip:</strong> Include source and index attributes for better citation accuracy.</p>
+                    <div class="tag-example"><span class="tag">&lt;documents&gt;</span>
+  <span class="tag">&lt;document index="1"&gt;</span>
+    <span class="tag">&lt;source&gt;</span>security_policy.pdf<span class="tag">&lt;/source&gt;</span>
+    <span class="tag">&lt;content&gt;</span>
+    ... document content ...
+    <span class="tag">&lt;/content&gt;</span>
+  <span class="tag">&lt;/document&gt;</span>
+  <span class="tag">&lt;document index="2"&gt;</span>
+    <span class="tag">&lt;source&gt;</span>code_review.md<span class="tag">&lt;/source&gt;</span>
+    <span class="tag">&lt;content&gt;</span>
+    ... document content ...
+    <span class="tag">&lt;/content&gt;</span>
+  <span class="tag">&lt;/document&gt;</span>
+<span class="tag">&lt;/documents&gt;</span></div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Based on <a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview" target="_blank">Anthropic's Prompt Engineering Guide</a>
+            and the <a href="https://www.reddit.com/r/PromptEngineering/comments/1nt7x7v/after_1000_hours_of_prompt_engineering_i_found/" target="_blank">KERNEL Framework</a>
+        </footer>
+    </div>
+
+    <script>
+        // Generate prompt on any input change
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('input', generatePrompt);
+        });
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+            el.addEventListener('change', generatePrompt);
+        });
+
+        function generatePrompt() {
+            const role = document.getElementById('role').value.trim();
+            const context = document.getElementById('context').value.trim();
+            const task = document.getElementById('task').value.trim();
+            const constraints = document.getElementById('constraints').value.trim();
+            const format = document.getElementById('format').value.trim();
+            const criteria = document.getElementById('criteria').value.trim();
+            const examples = document.getElementById('examples').value.trim();
+            const inputData = document.getElementById('inputData').value.trim();
+            const enableThinking = document.getElementById('enableThinking').checked;
+            const stepByStep = document.getElementById('stepByStep').checked;
+
+            let sections = [];
+            let sectionCount = 0;
+
+            if (role) {
+                sections.push(`<role>\n${role}\n</role>`);
+                sectionCount++;
+            }
+
+            if (context) {
+                sections.push(`<context>\n${context}\n</context>`);
+                sectionCount++;
+            }
+
+            if (task) {
+                let taskContent = task;
+                if (stepByStep) {
+                    taskContent += '\n\nPlease explain your reasoning step by step before providing your final answer.';
+                }
+                sections.push(`<task>\n${taskContent}\n</task>`);
+                sectionCount++;
+            }
+
+            if (constraints) {
+                sections.push(`<constraints>\n${constraints}\n</constraints>`);
+                sectionCount++;
+            }
+
+            if (format) {
+                let formatContent = format;
+                if (enableThinking) {
+                    formatContent += '\n\nStructure your response with <thinking> tags for your analysis, then <answer> tags for your final response.';
+                }
+                sections.push(`<format>\n${formatContent}\n</format>`);
+                sectionCount++;
+            }
+
+            if (criteria) {
+                sections.push(`<success_criteria>\n${criteria}\n</success_criteria>`);
+                sectionCount++;
+            }
+
+            if (examples) {
+                sections.push(`<examples>\n${examples}\n</examples>`);
+                sectionCount++;
+            }
+
+            if (inputData) {
+                sections.push(`<input>\n${inputData}\n</input>`);
+                sectionCount++;
+            }
+
+            const output = document.getElementById('output');
+
+            if (sections.length === 0) {
+                output.innerHTML = `<span class="empty">Fill in the sections on the left to generate your structured prompt...
+
+Minimum required: Task
+
+Recommended: Task + Constraints + Format</span>`;
+                updateStats('', 0);
+                return;
+            }
+
+            const prompt = sections.join('\n\n');
+
+            // Syntax highlight the output
+            const highlighted = prompt
+                .replace(/(<\/?[a-z_]+>)/g, '<span class="tag">$1</span>');
+
+            output.innerHTML = highlighted;
+            updateStats(prompt, sectionCount);
+        }
+
+        function updateStats(text, sectionCount) {
+            const chars = text.length;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const tokens = Math.ceil(chars / 4);
+
+            document.getElementById('charCount').textContent = chars.toLocaleString();
+            document.getElementById('wordCount').textContent = words.toLocaleString();
+            document.getElementById('tokenEstimate').textContent = '~' + tokens.toLocaleString();
+            document.getElementById('sectionCount').textContent = sectionCount;
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            const text = output.innerText;
+
+            if (text.includes('Fill in the sections')) return;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy Prompt';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function clearAll() {
+            document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+            document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+            generatePrompt();
+        }
+
+        function toggleCollapsible(id) {
+            document.getElementById(id).classList.toggle('open');
+        }
+
+        function loadExample(type) {
+            const examples = {
+                code: {
+                    role: 'You are a senior software engineer specializing in code review, security best practices, and performance optimization.',
+                    context: 'I am building a Python web API using FastAPI that handles user authentication and sensitive data processing.',
+                    task: 'Review the provided code for security vulnerabilities, performance issues, and code quality problems.',
+                    constraints: '- Focus only on security and performance issues\n- Use Python 3.10+ syntax in suggestions\n- Do not suggest complete rewrites, only targeted fixes\n- Prioritize issues by severity',
+                    format: 'For each issue found, provide:\n1. Line number(s)\n2. Issue description (1-2 sentences)\n3. Severity (CRITICAL/HIGH/MEDIUM/LOW)\n4. Code snippet showing the fix',
+                    criteria: '- Every issue must reference specific line numbers\n- All fixes must be syntactically valid Python\n- Severity must follow OWASP guidelines',
+                    examples: '',
+                    inputData: ''
+                },
+                writing: {
+                    role: 'You are a professional content strategist with expertise in technical writing, SEO, and audience engagement.',
+                    context: 'I run a developer blog targeting mid-level engineers interested in cloud architecture and DevOps practices. Our tone is professional but approachable.',
+                    task: 'Write an introduction paragraph (100-150 words) for a blog post about serverless computing trade-offs.',
+                    constraints: '- Keep under 150 words\n- Avoid jargon without explanation\n- Do not use clickbait phrases\n- Include a hook in the first sentence',
+                    format: 'A single paragraph that:\n- Hooks the reader immediately\n- Establishes credibility\n- Previews 2-3 key points the article will cover',
+                    criteria: '- Must mention at least 2 specific trade-offs\n- Should be scannable in under 30 seconds\n- No sentences longer than 25 words',
+                    examples: '',
+                    inputData: ''
+                },
+                analysis: {
+                    role: 'You are a data analyst with expertise in business intelligence, statistical interpretation, and executive communication.',
+                    context: 'I have quarterly sales data for an e-commerce company. The CEO needs insights for the board meeting tomorrow.',
+                    task: 'Analyze the provided sales data and identify the top 3 actionable insights.',
+                    constraints: '- Focus on insights that can drive immediate business decisions\n- Avoid technical statistical jargon\n- Each insight must be supported by specific numbers from the data',
+                    format: 'For each insight:\n1. Headline (under 10 words)\n2. Key finding (2-3 sentences with specific metrics)\n3. Recommended action (1 sentence)\n\nEnd with a one-paragraph executive summary.',
+                    criteria: '- All percentages must be calculated correctly\n- Insights must be actionable, not just descriptive\n- Executive summary must fit in a single paragraph',
+                    examples: '',
+                    inputData: ''
+                },
+                debug: {
+                    role: 'You are a debugging specialist who excels at systematic problem diagnosis and clear explanation.',
+                    context: 'I am getting an unexpected error in my application. I have limited time to fix this before deployment.',
+                    task: 'Diagnose the root cause of this error and provide a step-by-step fix.',
+                    constraints: '- Explain the root cause before suggesting fixes\n- Provide the minimal change needed to fix the issue\n- Include how to verify the fix worked',
+                    format: '1. Root Cause Analysis (2-3 sentences)\n2. Step-by-Step Fix (numbered steps)\n3. Verification (how to confirm it works)\n4. Prevention (how to avoid this in the future)',
+                    criteria: '- Fix must address the root cause, not just symptoms\n- Steps must be in executable order\n- Verification must be testable',
+                    examples: '',
+                    inputData: ''
+                }
+            };
+
+            const example = examples[type];
+            document.getElementById('role').value = example.role;
+            document.getElementById('context').value = example.context;
+            document.getElementById('task').value = example.task;
+            document.getElementById('constraints').value = example.constraints;
+            document.getElementById('format').value = example.format;
+            document.getElementById('criteria').value = example.criteria;
+            document.getElementById('examples').value = example.examples;
+            document.getElementById('inputData').value = example.inputData;
+
+            // Open collapsibles if they have content
+            if (example.criteria) document.getElementById('criteria-section').classList.add('open');
+            if (example.examples) document.getElementById('examples-section').classList.add('open');
+            if (example.inputData) document.getElementById('input-section').classList.add('open');
+
+            generatePrompt();
+        }
+    </script>
+</body>
+</html>

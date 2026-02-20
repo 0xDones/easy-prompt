@@ -1,0 +1,85 @@
+import type { PromptTemplate } from "@/types/prompt";
+
+export const PROMPT_TEMPLATES: PromptTemplate[] = [
+  {
+    id: "code-review",
+    name: "Code Review",
+    description: "Review code for bugs, security issues, and best practices",
+    data: {
+      task: "Review the provided code for bugs, security vulnerabilities, and adherence to best practices.",
+      constraints: "- Focus on critical issues first\n- Use positive framing for suggestions\n- Reference specific line numbers",
+      format: "For each issue found:\n1. Line number(s) affected\n2. Issue description (1-2 sentences)\n3. Severity: CRITICAL | HIGH | MEDIUM | LOW\n4. Fix: code snippet with correction",
+      successCriteria: "- Every issue references specific line numbers\n- All code fixes are syntactically valid\n- Severity ratings are justified",
+      enabledSections: {
+        constraints: true,
+        format: true,
+        context: false,
+        role: false,
+        examples: false,
+        successCriteria: true,
+        input: true,
+      },
+    },
+  },
+  {
+    id: "content-writing",
+    name: "Content Writing",
+    description: "Write blog posts, articles, or marketing copy",
+    data: {
+      task: "Write a blog post about the specified topic.",
+      constraints: "- Use clear, conversational language\n- Include actionable takeaways\n- Avoid jargon unless explained",
+      format: "Structure:\n1. Hook/introduction (2-3 sentences)\n2. Main content with subheadings\n3. Conclusion with call-to-action\n\nLength: 800-1200 words",
+      context: "Target audience: [describe your readers]\nPublication: [blog name or platform]\nTone: [professional/casual/friendly/authoritative]",
+      role: "You are an experienced content writer who specializes in making complex topics accessible to general audiences.",
+      enabledSections: {
+        constraints: true,
+        format: true,
+        context: true,
+        role: true,
+        examples: false,
+        successCriteria: false,
+        input: true,
+      },
+    },
+  },
+  {
+    id: "data-analysis",
+    name: "Data Analysis",
+    description: "Analyze datasets and extract insights",
+    data: {
+      task: "Analyze the provided dataset and extract key insights.",
+      constraints: "- Focus on statistical significance\n- Highlight anomalies and outliers\n- Use clear visualizations descriptions",
+      format: "Structure:\n1. Summary statistics\n2. Key findings (top 3-5)\n3. Anomalies detected\n4. Recommendations",
+      role: "You are a data analyst with expertise in statistical analysis and data visualization.",
+      enabledSections: {
+        constraints: true,
+        format: true,
+        context: false,
+        role: true,
+        examples: false,
+        successCriteria: false,
+        input: true,
+      },
+    },
+  },
+  {
+    id: "debug-help",
+    name: "Debug Help",
+    description: "Debug code issues and find root causes",
+    data: {
+      task: "Debug the provided code and identify the root cause of the issue.",
+      constraints: "- Explain the bug step by step\n- Provide a minimal fix\n- Suggest preventive measures",
+      format: "1. Bug identification\n2. Root cause analysis\n3. Fix (code snippet)\n4. Prevention tips",
+      context: "Error message or unexpected behavior: [describe the issue]",
+      enabledSections: {
+        constraints: true,
+        format: true,
+        context: true,
+        role: false,
+        examples: false,
+        successCriteria: false,
+        input: true,
+      },
+    },
+  },
+];
