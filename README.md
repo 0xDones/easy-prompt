@@ -1,73 +1,45 @@
-# React + TypeScript + Vite
+# Easy Prompt
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A structured prompt builder that helps you craft well-organized prompts using XML tags for better AI understanding.
 
-Currently, two official plugins are available:
+![Easy Prompt UI](docs/assets/ui.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Live demo:** [https://0xdones.github.io/easy-prompt/](https://0xdones.github.io/easy-prompt/)
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Tabbed field editor** -- Task, Role, Context, Constraints, Output Format, Examples, Success Criteria, and Input fields organized into tabs with status indicators
+- **XML-tagged output** -- Generates structured prompts wrapped in semantic XML tags (`<role>`, `<task>`, `<constraints>`, etc.) following prompt engineering best practices
+- **Quick personas** -- Pre-built role definitions (Software Engineer, DevOps Engineer) applied in one click
+- **Prompt templates** -- Full starter templates for common use cases: Code Review, Content Writing, Data Analysis, Debug Help
+- **Live preview** -- Real-time prompt preview with copy-to-clipboard, word/character/section counts
+- **Auto-save** -- Form state persists to localStorage across sessions
+- **Dark theme** -- Purpose-built dark UI with jewel-tone accents
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 19 + TypeScript
+- Vite (rolldown-vite)
+- Tailwind CSS v4
+- Radix UI primitives
+- GitHub Pages (CI/CD via GitHub Actions)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open [http://localhost:5173/easy-prompt/](http://localhost:5173/easy-prompt/) in your browser.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Build
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm build
+pnpm preview
 ```
+
+## License
+
+MIT
